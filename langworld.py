@@ -2,16 +2,12 @@ import pygame, os, sys, operator
 
 pygame.init()
 
-# this is map 1, it can go into a separate file once we have more maps.
-
 MAP1 = ["0020",
 "0020",
 "1121",
 "3323",
 "1121",
 "1121"]
-
-# these are constant dicts for tile images
 
 TILE_IMAGES = ["./data/images/" + img + ".png" for img in ["grass", "stone", "wood", "water"]]
 PLAYER_IMAGE = "./data/images/" + "boy" + ".png"
