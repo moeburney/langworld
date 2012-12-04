@@ -40,6 +40,7 @@ class Map:
         self.map_terrain = map["terrain"]
         self.map_sprites = map["sprites"]
         self.map_player_pos = (0, 0)
+        self.has_collision = False
 
     def _blit(self, screen, map_list, image_list, tile_width = 101, tile_height = 121, border_width = 38, tile_max = 24, column_max = 4):
         columns = 0
@@ -71,13 +72,20 @@ class Map:
 
         #pygame.draw.rect(screen, (255,255,255), (38,800,404,800))
 
-    def check_collides(self):
+    def get_collisions(self):
         #return a collision if a sprite is in current player position on grid
         #print self.map_sprites[self.map_player_pos[0]][self.map_player_pos[1]]
 
         #todo: figure out why [1][0] position is detecting - x and y coords messed up?
+        #todo, perhaps get rid of conditional and merge this method with self.collide
+        #todo, character is returning None when world.dialog is called, not sure why
         if (int(self.map_sprites[self.map_player_pos[1]][self.map_player_pos[0]])) > 0:
-            print "collision"
+            if self.has_collision is False:
+                self.has_collision = True
+                self.collisions = (self.map_player_pos[1], self.map_player_pos[0])
+                return int(self.map_sprites[self.map_player_pos[1]][self.map_player_pos[0]])
+        else:
+            return 0
 
     def set_map_player_pos(self, player_rect):
         '''Accepts the player's rect (possibly from player.get_rect) as an argument
@@ -126,7 +134,9 @@ class World:
 
     def cycle(self):
         self.active_map.set_map_player_pos(self.player.get_rect())
-        self.active_map.check_collides()
+        collision = self.active_map.get_collisions()
+        if collision > 0:
+            self.dialog(self.player, collision)
 
     def inputs(self):
         pygame.event.pump()
@@ -149,6 +159,12 @@ class World:
             if pygame.key.get_pressed()[i]:
                 self.player.move((0, 10))
                 break
+
+    def dialog(self, a, b):
+        print "dialog between "
+        print a
+        print " and "
+        print b
 
     def run(self):
         while True:
