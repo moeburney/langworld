@@ -39,7 +39,7 @@ class Map:
     def __init__(self, map):
         self.map_terrain = map["terrain"]
         self.map_sprites = map["sprites"]
-        self.map_tiles = []
+        self.map_player_pos = (0, 0)
 
     def _blit(self, screen, map_list, image_list, tile_width = 101, tile_height = 121, border_width = 38, tile_max = 24, column_max = 4):
         columns = 0
@@ -69,20 +69,23 @@ class Map:
         self._blit(screen, self.map_terrain, TILE_IMAGES)
         self._blit(screen, self.map_sprites, SPRITE_IMAGES)
 
-        '''
-        for string in self.map_terrain:
-            if tile_count == 24:
-                    break
-            for char in string:
-                screen.blit(pygame.image.load(TILE_IMAGES[int(char)]), (border_width + (tile_width*columns), tile_height*rows))
-                columns += 1
-                tile_count += 1
-                if (columns == 4):
-                    columns = 0
-                    rows += 1
-        '''
-
         #pygame.draw.rect(screen, (255,255,255), (38,800,404,800))
+
+    def check_collides(self):
+        #return a collision if a sprite is in current player position on grid
+        #print self.map_sprites[self.map_player_pos[0]][self.map_player_pos[1]]
+
+        #todo: figure out why [1][0] position is detecting - x and y coords messed up?
+        if (int(self.map_sprites[self.map_player_pos[1]][self.map_player_pos[0]])) > 0:
+            print "collision"
+
+    def set_map_player_pos(self, player_rect):
+        '''Accepts the player's rect (possibly from player.get_rect) as an argument
+        then calculates and returns player position on map (i.e. the 4x6 grid).
+        Useful for collision detection.
+        '''
+        self.map_player_pos = (player_rect.left / 101, player_rect.top / 121)
+
 
 class Player:
     def __init__(self):
@@ -93,6 +96,9 @@ class Player:
 
     def get_rect(self):
         return self.rect
+
+    def get_grid_position(self):
+        pass
 
     def blit(self, screen):
         screen.blit(pygame.image.load(PLAYER_IMAGE), self.rect)
@@ -119,7 +125,8 @@ class World:
         pygame.display.flip()
 
     def cycle(self):
-        pass
+        self.active_map.set_map_player_pos(self.player.get_rect())
+        self.active_map.check_collides()
 
     def inputs(self):
         pygame.event.pump()
@@ -147,6 +154,7 @@ class World:
         while True:
             self.clock.tick(30)
             self.inputs()
+            self.cycle()
             self.blit()
 
 w = World()
