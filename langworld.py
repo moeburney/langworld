@@ -4,25 +4,59 @@ import pygame, os, sys, operator
 
 pygame.init()
 
-MAP1 = ["0020",
+# 0 = grass, 1 = stone, 2 = wood, 3 = water
+MAP1_TERRAIN = ["0020",
 "0020",
 "1121",
 "3323",
 "1121",
 "1121"]
 
+# 0 = neutral, 1 = friend, 2 = badguy, 3 = shop
+MAP1_SPRITES = ["0002",
+"0000",
+"0000",
+"0000",
+"0000",
+"0000"]
+
+MAP1 = {"terrain":MAP1_TERRAIN, "sprites":MAP1_SPRITES}
+
 TILE_IMAGES = ["./data/images/" + img + ".png" for img in ["grass", "stone", "wood", "water"]]
 PLAYER_IMAGE = "./data/images/" + "boy" + ".png"
+
 KEYS = {"left"       : [pygame.K_a,pygame.K_LEFT],
         "right"      : [pygame.K_d,pygame.K_RIGHT],
         "up"         : [pygame.K_w,pygame.K_UP],
         "down"       : [pygame.K_s,pygame.K_DOWN],
         "quit"       : [pygame.K_q,pygame.K_ESCAPE]}
 
+SPRITES = {}
+SPRITES["badguy"] = {"image":"./data/images/badguy.png", "status":"enemy", "hitpoints":15, "aggression": 5}
+SPRITE_IMAGES = [None, None, SPRITES["badguy"]["image"], None]
+
 class Map:
     def __init__(self, map):
-        self.map = map
+        self.map_terrain = map["terrain"]
+        self.map_sprites = map["sprites"]
         self.map_tiles = []
+
+    def _blit(self, screen, map_list, image_list, tile_width = 101, tile_height = 121, border_width = 38, tile_max = 24, column_max = 4):
+        columns = 0
+        rows = 0
+        tile_count = 0
+
+        for string in map_list:
+            if tile_count == tile_max:
+                    break
+            for char in string:
+                if image_list[int(char)] is not None:
+                    screen.blit(pygame.image.load(image_list[int(char)]), (border_width + (tile_width*columns), tile_height*rows))
+                columns += 1
+                tile_count += 1
+                if (columns == 4):
+                    columns = 0
+                    rows += 1
 
     def blit(self, screen):
         columns = 0
@@ -32,7 +66,11 @@ class Map:
         tile_height = 121
         border_width = 38
 
-        for string in self.map:
+        self._blit(screen, self.map_terrain, TILE_IMAGES)
+        self._blit(screen, self.map_sprites, SPRITE_IMAGES)
+
+        '''
+        for string in self.map_terrain:
             if tile_count == 24:
                     break
             for char in string:
@@ -42,6 +80,7 @@ class Map:
                 if (columns == 4):
                     columns = 0
                     rows += 1
+        '''
 
         #pygame.draw.rect(screen, (255,255,255), (38,800,404,800))
 
