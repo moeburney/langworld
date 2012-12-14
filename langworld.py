@@ -16,7 +16,7 @@ MAP1_TERRAIN = ["0020",
 MAP1_SPRITES = ["0002",
 "0000",
 "0000",
-"0000",
+"0200",
 "0000",
 "0000"]
 
@@ -40,7 +40,8 @@ class Map:
         self.map_terrain = map["terrain"]
         self.map_sprites = map["sprites"]
         self.map_player_pos = (0, 0)
-        self.has_collision = False
+        #self.has_collision = False
+        self.collision_location = (-1, -1)
 
     def _blit(self, screen, map_list, image_list, tile_width = 101, tile_height = 121, border_width = 38, tile_max = 24, column_max = 4):
         columns = 0
@@ -72,6 +73,7 @@ class Map:
 
         #pygame.draw.rect(screen, (255,255,255), (38,800,404,800))
 
+
     def get_collisions(self):
         #return a collision if a sprite is in current player position on grid
         #print self.map_sprites[self.map_player_pos[0]][self.map_player_pos[1]]
@@ -79,9 +81,14 @@ class Map:
         #todo: figure out why [1][0] position is detecting - x and y coords messed up?
         #todo, perhaps get rid of conditional and merge this method with self.collide
         #todo, character is returning None when world.dialog is called, not sure why
+
         if (int(self.map_sprites[self.map_player_pos[1]][self.map_player_pos[0]])) > 0:
-            if self.has_collision is False:
-                self.has_collision = True
+            #if self.has_collision is False:
+            #changed this conition to check if coords already had a collision, not just a collision in general
+            if self.collision_location != (self.map_player_pos[1], self.map_player_pos[0]):
+                #self.has_collision = True
+                self.collision_location = (self.map_player_pos[1], self.map_player_pos[0])
+                #todo: we may not need self.collisions anymore
                 self.collisions = (self.map_player_pos[1], self.map_player_pos[0])
                 return int(self.map_sprites[self.map_player_pos[1]][self.map_player_pos[0]])
         else:
