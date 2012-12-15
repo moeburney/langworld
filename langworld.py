@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import pygame, os, sys, operator
+from pygame.locals import *
+import guikit as g
 
 pygame.init()
 
@@ -141,9 +143,9 @@ class World:
 
     def cycle(self):
         self.active_map.set_map_player_pos(self.player.get_rect())
-        collision = self.active_map.get_collisions()
-        if collision > 0:
-            self.dialog(self.player, collision)
+        collision_sprite = self.active_map.get_collisions()
+        if collision_sprite > 0:
+            self.dialog(collision_sprite)
 
     def inputs(self):
         pygame.event.pump()
@@ -167,11 +169,29 @@ class World:
                 self.player.move((0, 10))
                 break
 
-    def dialog(self, a, b):
-        print "dialog between "
-        print a
-        print " and "
-        print b
+    def dialog(self, character):
+        breakloop = 0
+        while breakloop == 0:
+            event = pygame.event.wait()
+            if event.type == KEYDOWN:
+                if pygame.key.get_pressed()[K_RETURN]:
+                    breakloop = 1
+            else:
+                #todo: this functionality can be abstracted away
+                #into the gui toolkit module
+
+                dialog_image = pygame.Surface((400,200))
+                dialog_image.fill((255, 255, 255))
+                self.screen.blit(dialog_image,(40,200))
+
+                font = pygame.font.Font(None, 17)
+                text = font.render('Hit Return to Continue', True, (255, 255, 255), (159, 182, 205))
+                text_rect = text.get_rect()
+                text_rect.centerx = 180
+                text_rect.centery = 300
+                self.screen.blit(text, text_rect)
+
+                pygame.display.flip()
 
     def run(self):
         while True:
