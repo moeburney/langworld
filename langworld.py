@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# Copyright (c) Moe Burney
+# See gpl.txt for license
+
 import pygame, os, sys, operator
 from pygame.locals import *
 import guikit as g
@@ -81,8 +84,7 @@ class Map:
         #print self.map_sprites[self.map_player_pos[0]][self.map_player_pos[1]]
 
         #todo: figure out why [1][0] position is detecting - x and y coords messed up?
-        #todo, perhaps get rid of conditional and merge this method with self.collide
-        #todo, character is returning None when world.dialog is called, not sure why
+        #todo: perhaps get rid of conditional and merge this method with self.collide
 
         if (int(self.map_sprites[self.map_player_pos[1]][self.map_player_pos[0]])) > 0:
             #if self.has_collision is False:
